@@ -1,4 +1,4 @@
-# Shared External Contact Management via Google Sheets
+# Google Workspace Shared External Contact Management via Google Sheets
 This Google Apps Script project enables managing shared external contacts (Domain Shared Contacts) for a Google Workspace through a Google Sheets interface.
 
 💻 [skip ahead to the nitty-gritty](#setup)
@@ -9,7 +9,7 @@ This Google Apps Script project enables managing shared external contacts (Domai
 These are external contacts that are shared with all users in a Google Workspace domain.
 
 ### Why are they useful?
-Suppose you are part of an organization — for example, a volunteer search and rescue team — with a Google Workspace. Your team may have a Contact Directory with members and staff contacts that are within your Domain (internal contacts). It would also be convenient to have some contacts from a team in a neighboring area listed in the Contact Directory so that *anyone* in your team can easily contact them. :iphone:
+Suppose you are part of an organization — for example, a volunteer search and rescue team — with a Google Workspace. Your team may have a Contacts Directory with members and staff contacts that are within your Domain (internal contacts). It would also be convenient to have some contacts from a team in a neighboring area listed in the Contacts Directory so that *anyone* in your team can easily contact them. :iphone:
 
 ### The problem
 Google does not provide a user interface for managing shared external contacts (Domain Shared Contacts). :upside_down_face:
