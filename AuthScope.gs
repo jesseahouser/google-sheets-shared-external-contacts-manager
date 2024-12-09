@@ -1,6 +1,6 @@
 /**
- * For OAuth2 to be scoped properly, the above line must be
- * both present in the file and commented out (so as not to execute).
+ * For OAuth2 to be scoped properly, the line below must be
+ * both present in the project and commented out (so as not to execute).
  * If this is ommitted, HTTP requests to the Shared Domain Contacts API
  * will result in the following response:
  *   {
