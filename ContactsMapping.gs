@@ -1,3 +1,9 @@
+/**
+ * Creates a map that links each column in the contact table to a corresponding field in the internal contact data.
+ * This mapping helps in translating data from the table format to the internal format used in the system.
+ *
+ * @return {Object} A key-value map where the keys are table column names and the values are the corresponding internal field names.
+ */
 function createContactTableMapping() {
   const contactTableMapping = {
     action: {

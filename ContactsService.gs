@@ -1,5 +1,12 @@
+/**
+ * Fetches shared external contacts starting from a specified index.
+ * If the starting index is the first, clears existing table data.
+ * 
+ * @param {number} [startIndex=1] - The starting index for fetching contacts.
+ * @return {void}
+ */
 function fetchContacts(startIndex = 1) {
-  console.log(`Fetching external contacts, startIndex: ${startIndex}`)
+  console.log(`Fetching shared external contacts, startIndex: ${startIndex}`)
   if (startIndex = 1)
     maybeClearTableData()
 
@@ -8,11 +15,26 @@ function fetchContacts(startIndex = 1) {
   handleResponse('get', response)
 }
 
+/**
+ * Determines whether more contacts need to be fetched based on the total count.
+ * If required, fetches the next batch.
+ * 
+ * @param {Array<Object>} tableContacts - The contacts currently fetched.
+ * @param {number} totalNumContacts - The total number of contacts available.
+ * @param {number} startIndex - The current start index.
+ * @return {void}
+ */
 function maybeFetchMoreContacts(tableContacts, totalNumContacts, startIndex) {
   if (tableContacts.length < totalNumContacts)
     fetchContacts(startIndex + 25)
 }
 
+/**
+ * Synchronizes contacts by processing actions (ADD, UPDATE, DELETE).
+ * Handles operations based on contact data from the spreadsheet.
+ * 
+ * @return {void}
+ */
 function syncContacts() {
   const tableData =
     SHEET
@@ -57,6 +79,13 @@ function syncContacts() {
   }
 }
 
+/**
+ * Sends a request to add a new contact if it does not already have an ID.
+ * 
+ * @param {Object} contact - The contact object to be added.
+ * @param {number} rowNum - The row number in the spreadsheet for this contact.
+ * @return {void}
+ */
 function addContact(contact,rowNum) {
   if (contact.id) {
     console.log(
@@ -73,6 +102,13 @@ function addContact(contact,rowNum) {
   }
 }
 
+/**
+ * Sends a request to update an existing contact if it has an ID.
+ * 
+ * @param {Object} contact - The contact object with updated data.
+ * @param {number} rowNum - The row number in the spreadsheet for this contact.
+ * @return {void}
+ */
 function updateContact(contact, rowNum) {
   if (contact.id) {
     console.log(
@@ -88,6 +124,13 @@ function updateContact(contact, rowNum) {
   }
 }
 
+/**
+ * Sends a request to delete a contact if it has an ID.
+ * 
+ * @param {Object} contact - The contact object to be deleted.
+ * @param {number} rowNum - The row number in the spreadsheet for this contact.
+ * @return {void}
+ */
 function deleteContact(contact,rowNum) {
   if (contact.id) {
     console.log(
@@ -103,6 +146,14 @@ function deleteContact(contact,rowNum) {
   }
 }
 
+/**
+ * Creates a request object for a specified HTTP method and contact operation.
+ * 
+ * @param {string} method - The HTTP method ('get', 'post', 'put', 'delete').
+ * @param {Object} [contact] - The contact object for post/put/delete operations.
+ * @param {number} [startIndex=null] - The starting index for 'get' requests.
+ * @return {Object} The request object containing URL and options.
+ */
 function formRequest(method, contact, startIndex = null) {
   switch (method) {
     case 'get':
@@ -172,6 +223,14 @@ function formRequest(method, contact, startIndex = null) {
   return {url, options}
 }
 
+/**
+ * Handles API responses based on the HTTP method and updates the spreadsheet accordingly.
+ * 
+ * @param {string} method - The HTTP method ('get', 'post', 'put', 'delete').
+ * @param {Object} response - The response object from the API.
+ * @param {number} [rowNum=null] - The row number in the spreadsheet for post/put/delete operations.
+ * @return {void}
+ */
 function handleResponse(method, response, rowNum = null) {
   const responseCode=response.getResponseCode()
   console.log(

@@ -1,4 +1,9 @@
-function maybeClearTableData() {
+/**
+ * Clears all data from the spreadsheet starting from the specified first data row and column.
+ * Ensures that only data below the headers is removed.
+ * 
+ * @return {void}
+ */function maybeClearTableData() {
   if (SHEET.getLastRow() >= FIRST_DATA_ROW_NUMBER)
     SHEET
       .getRange(
@@ -9,6 +14,14 @@ function maybeClearTableData() {
       .clearContent()
 }
 
+/**
+ * Retrieves a value from a nested data object using a specified path.
+ * Supports advanced path operations like array access and filtering.
+ * 
+ * @param {string} path - The dot-notated path to the value (e.g., "gd$email[0].address").
+ * @param {Object} data - The data object to traverse.
+ * @return {*} The value at the specified path, or null if not found.
+ */
 function outputValue(path, data) {
   // Handle complex path (e.g., find() or other advanced path conditions)
   if (path.includes('.find')) {
@@ -54,11 +67,18 @@ function outputValue(path, data) {
   return value === "undefined" ? null : value
 }
 
+/**
+ * Resolves a value from an object using a dot-notated path.
+ * 
+ * @param {string} path - The dot-notated key (e.g., "user.profile.email").
+ * @param {Object} data - The object to traverse.
+ * @return {*} The value at the specified path, or null if not found.
+ */
 function getObjectByPath(path, data) {
   return path.split('.').reduce((acc, key) => {
     if (acc && acc[key] !== "undefined") {
-      return acc[key];
+      return acc[key]
     }
-    return null;
-  }, data);
+    return null
+  }, data)
 }
