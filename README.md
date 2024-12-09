@@ -1,7 +1,7 @@
 # Shared External Contact Management via Google Sheets
 This Google Apps Script project enables managing shared external contacts (Domain Shared Contacts) for a Google Workspace through a Google Sheets interface.
 
-[Skip ahead to the nitty-gritty](#setup)
+💻 [skip ahead to the nitty-gritty](#setup)
 
 ## Background
 
