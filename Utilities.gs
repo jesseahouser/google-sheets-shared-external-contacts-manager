@@ -3,7 +3,8 @@
  * Ensures that only data below the headers is removed.
  * 
  * @return {void}
- */function maybeClearTableData() {
+ */
+function maybeClearTableData() {
   if (SHEET.getLastRow() >= FIRST_DATA_ROW_NUMBER)
     SHEET
       .getRange(
