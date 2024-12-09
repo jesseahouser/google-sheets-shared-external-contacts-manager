@@ -1,5 +1,5 @@
 function fetchContacts(startIndex = 1) {
-  console.log(`Getting external contacts, startIndex: ${startIndex}`)
+  console.log(`Fetching external contacts, startIndex: ${startIndex}`)
   if (startIndex = 1)
     maybeClearTableData()
 
@@ -27,21 +27,17 @@ function syncContacts() {
   var errorCount=''
 
   if (contacts) {
-    console.log(`Contacts: ${contacts}`)
     for (i in contacts) {
       var rowNum = FIRST_DATA_ROW_NUMBER + parseInt(i)
       
       switch (contacts[i].action) {
         case 'ADD':
-          console.log(`Adding contact {i: ${i}, rowNum: ${rowNum}}`)
           addContact(contacts[i], rowNum)
           break
         case 'UPDATE' :
-          console.log(`Updating contact {i: ${i}, rowNum: ${rowNum}}`)
           updateContact(contacts[i], rowNum)
           break
         case 'DELETE' :
-          console.log(`Deleting contact {i: ${i}, rowNum: ${rowNum}}`)
           deleteContact(contacts[i], rowNum)
           break
       }
@@ -62,25 +58,49 @@ function syncContacts() {
 }
 
 function addContact(contact,rowNum) {
-  console.log(`Sending request to add contact: ${contact.givenName} ${contact.familyName}`)
-  const request = formRequest('post', contact, rowNum)
-  const response = UrlFetchApp.fetch(request.url, request.options)
-  handleResponse('post', response, rowNum)
+  if (contact.id) {
+    console.log(
+      `Skipping request to add contact because id already present:
+      {givenName: ${contact.givenName}, familyName: ${contact.familyName}, id: ${contact.id}}`)
+  }
+  else {
+    console.log(
+      `Sending request to add contact:
+      {givenName: ${contact.givenName}, familyName: ${contact.familyName}}`)
+    const request = formRequest('post', contact, rowNum)
+    const response = UrlFetchApp.fetch(request.url, request.options)
+    handleResponse('post', response, rowNum)
+  }
 }
 
 function updateContact(contact, rowNum) {
-  console.log(`Sending request to update contact: ${contact.givenName} ${contact.familyName}`)
-  const request = formRequest('put', contact)
-  const response = UrlFetchApp.fetch(request.url, request.options)
-  console.log('Received response for update contact...')
-  handleResponse('put', response, rowNum) 
+  if (contact.id) {
+    console.log(
+      `Sending request to update contact:
+      {givenName: ${contact.givenName}, familyName: ${contact.familyName}, id: ${contact.id}}`)
+    const request = formRequest('put', contact)
+    const response = UrlFetchApp.fetch(request.url, request.options)
+    handleResponse('put', response, rowNum) 
+  } else {
+    console.log(
+      `Skipping request to update contact because no id:
+      {givenName: ${contact.givenName}, familyName: ${contact.familyName}, id: ${contact.id}}`)
+  }
 }
 
 function deleteContact(contact,rowNum) {
-  console.log(`Sending request to delete contact: ${contact.givenName} ${contact.familyName}`)
-  const request = formRequest('delete', contact)
-  const response = UrlFetchApp.fetch(request.url, request.options);
-  handleResponse('delete', response, rowNum)
+  if (contact.id) {
+    console.log(
+      `Sending request to delete contact:
+      {givenName: ${contact.givenName}, familyName: ${contact.familyName}, id: ${contact.id}}`)
+    const request = formRequest('delete', contact)
+    const response = UrlFetchApp.fetch(request.url, request.options);
+    handleResponse('delete', response, rowNum)
+  } else {
+    console.log(
+      `Skipping request to delete contact because no id:
+      {givenName: ${contact.givenName}, familyName: ${contact.familyName}, id: ${contact.id}}`)
+  }
 }
 
 function formRequest(method, contact, startIndex = null) {
@@ -112,7 +132,7 @@ function formRequest(method, contact, startIndex = null) {
           'Authorization': 'Bearer ' + ScriptApp.getOAuthToken(),
           'GData-Version': '3.0'
         },
-        payload: buildXML(contact),
+        payload: buildXMLContact(contact),
         muteHttpExceptions: true
       }
       break
@@ -128,7 +148,7 @@ function formRequest(method, contact, startIndex = null) {
           "GData-Version": "3.0",
           "If-Match":"*"
         },
-        payload: buildXML(contact),
+        payload: buildXMLContact(contact),
         muteHttpExceptions: true
       }
       break
@@ -154,7 +174,10 @@ function formRequest(method, contact, startIndex = null) {
 
 function handleResponse(method, response, rowNum = null) {
   const responseCode=response.getResponseCode()
-  console.log(`{method: ${method.toString().toUpperCase()}, response code: ${responseCode}, response: ${response}}`)
+  console.log(
+    `method: ${method.toString().toUpperCase()}
+response code: ${responseCode}
+response: ${response}`)
 
   switch (method) {
     case 'get':
@@ -195,7 +218,7 @@ function handleResponse(method, response, rowNum = null) {
 
     case 'delete':
       if (responseCode >= 200 && responseCode < 300) {
-        SHEET.getRange(rowNum, 1, 1, 1).deleteRow(rowNum)
+        SHEET.deleteRow(rowNum)
         SpreadsheetApp.flush()
       } else {
         SHEET.getRange(rowNum, 2, 1, 1).setValue('ERROR')
