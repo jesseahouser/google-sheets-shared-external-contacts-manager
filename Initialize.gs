@@ -15,7 +15,7 @@ function onInstall(e) {
  */
 function onOpen(e){
   SpreadsheetApp.getUi()
-      .createAddonMenu()
+      .createMenu('Shared External Contacts')
       .addItem('Get contacts', 'fetchContacts')
       .addItem('Sync contacts','syncContacts')
       .addToUi()
