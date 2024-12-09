@@ -23,7 +23,7 @@ Google suggests three options for doing so:
 > * 💸 [Google Workspace Marketplace apps](https://www.google.com/enterprise/marketplace/search?orderBy=rating&query=) — For admins who want a user interface that doesn't require programming. Search for “shared contacts.”
 > * ☁️ [Google Cloud Directory Sync](https://support.google.com/a/topic/2679497) — For admins who want to synchronize external contacts from a Microsoft Active Directory or LDAP server. Sync your shared contacts.
 
-*(excerpt from [Google Workspace Help - Add shared external contacts to the Directory](https://support.google.com/a/answer/9281635?fl=1&sjid=12378158771792397271-NC), emoji for emphasis* 😉*)*
+*(excerpt from [Google Workspace Help - Add shared external contacts to the Directory](https://support.google.com/a/answer/9281635?fl=1&sjid=12378158771792397271-NC), emoji for emphasis* 😉 *)*
 
 ### A 🆓 solution
 For many organizations, a cost-based app option isn't attractive, and Google Cloud Directory Sync does not match their implementation. What they *really* need is a free and easy contact management tool. This Apps Script project serves that purpose.
