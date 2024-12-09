@@ -1,3 +1,10 @@
+/**
+ * Maps a returned contact object to a structured table contact format using a provided mapping.
+ * 
+ * @param {Object} returnedContact - The contact object retrieved from the external source.
+ * @param {Object} contactTableMapping - Mapping between contact fields and table columns.
+ * @return {Object} The mapped table contact object.
+ */
 function mapReturnedContactToTableContact(returnedContact, contactTableMapping) {
   var tableContact = {}
 
@@ -13,37 +20,45 @@ function mapReturnedContactToTableContact(returnedContact, contactTableMapping) 
   return tableContact
 }
 
+/**
+ * Adds an array of table contacts to the spreadsheet, aligning values to appropriate columns.
+ * 
+ * @param {Array<Object>} contacts - An array of contacts structured as table rows.
+ * @return {void}
+ */
 function addTableContactsToDataTable(contacts) {
   contacts.forEach(contact => {
-    // Convert the contact object to an array of its values and sort by colNum
-    const sortedContact = Object.values(contact).sort((a, b) => a.colNum - b.colNum)
+    const sortedContact =
+      Object
+        .values(contact)
+        .sort((a, b) => a.colNum - b.colNum)
 
-    // Create an array to hold the data in the correct column positions
     const rowData = []
 
-    // Place data in the appropriate column index
     sortedContact.forEach(item => {
-      // Ensure the rowData array is large enough to accommodate the highest colNum
-      // colNum is 1-based, so we use colNum - 1 for 0-based indexing
-      rowData[item.colNum - 1] = item.value || ''; // Use empty string if value is null
+      rowData[item.colNum - 1] = item.value || ''
     })
 
-    // Insert the data into a new row (or specify a different row if needed)
     SHEET.appendRow(rowData)
   })
 }
 
+/**
+ * Builds an array of contact objects from table data and column mappings.
+ * 
+ * @param {Array<Array<string>>} tableData - Two-dimensional array representing table rows and columns.
+ * @param {Object} mapping - Mapping between table columns and contact fields.
+ * @return {Array<Object>} An array of contact objects.
+ */
 function buildContactsFromTableData(tableData, mapping) {
   const contacts = []
   tableData.forEach(row => {
     var contact = {}
     row.forEach((cellContents, index) => {
-      // Find the mapping where columnNumber == colNum
       const colNum = index + 1
       const field = Object.keys(mapping).find(key => mapping[key].columnNumber === colNum)
       
       if (field) {
-        // Save the cellContents to the appropriate contact field
         cellContents ? contact[field] = cellContents : contact[field] = ''
       }
     })
@@ -52,7 +67,12 @@ function buildContactsFromTableData(tableData, mapping) {
   return contacts
 }
 
-// Sort by last name, then first name (if last names are the same)
+/**
+ * Sorts an array of table contacts alphabetically by last name, then by first name if last names are the same.
+ * 
+ * @param {Array<Object>} tableContacts - An array of table contact objects.
+ * @return {Array<Object>} A sorted array of table contacts.
+ */
 function sortTableContactsAlphabetically(tableContacts) {
   return tableContacts.sort((a, b) => {
     var lastNameCompare = a.familyName.value.localeCompare(b.familyName.value)
@@ -63,6 +83,12 @@ function sortTableContactsAlphabetically(tableContacts) {
   })
 }
 
+/**
+ * Constructs an XML representation of a contact for external API compatibility.
+ * 
+ * @param {Object} contact - The contact object with fields like name, email, phone, etc.
+ * @return {string} An XML string representing the contact.
+ */
 function buildXMLContact(contact) {
   return "<atom:entry xmlns:atom='http://www.w3.org/2005/Atom'\
         xmlns:gd='http://schemas.google.com/g/2005'>\
