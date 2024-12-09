@@ -37,7 +37,6 @@ function buildContactsFromTableData(tableData, mapping) {
   const contacts = []
   tableData.forEach(row => {
     var contact = {}
-    console.log(`row: ${row}`)
     row.forEach((cellContents, index) => {
       // Find the mapping where columnNumber == colNum
       const colNum = index + 1
@@ -64,7 +63,7 @@ function sortTableContactsAlphabetically(tableContacts) {
   })
 }
 
-function buildXML(contact) {
+function buildXMLContact(contact) {
   return "<atom:entry xmlns:atom='http://www.w3.org/2005/Atom'\
         xmlns:gd='http://schemas.google.com/g/2005'>\
       <atom:category scheme='http://schemas.google.com/g/2005#kind'\
