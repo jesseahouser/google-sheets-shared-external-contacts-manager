@@ -1,9 +1,24 @@
 # Shared External Contact Management via Google Sheets
 This Google Apps Script project enables managing shared external contacts (Domain Shared Contacts) for a Google Workspace through a Google Sheets interface.
 
+## Background
+
+### The problem
+Google does not provide a user interface for managing shared external contacts (Domain Shared Contacts). Google suggests three options for doing so:
+
+> You can add external contacts to your Directory in 3 ways:
+> * [Domain Shared Contacts API](http://code.google.com/googleapps/domain/shared_contacts/gdata_shared_contacts_api_reference.html) — For admins who are comfortable with using SDKs. Use these APIs to add, edit, and delete external contacts. Before working with APIs, you need to [enable APIs access](https://support.google.com/a/answer/60757). You should also be familiar with protocol basics. Once you're comfortable with APIs, use the [code libraries](http://code.google.com/googleapps/domain/libraries_and_samples.html) for reference.
+> * [Google Workspace Marketplace apps](https://www.google.com/enterprise/marketplace/search?orderBy=rating&query=) — For admins who want a user interface that doesn't require programming. Search for “shared contacts.”
+> * [Google Cloud Directory Sync](https://support.google.com/a/topic/2679497) — For admins who want to synchronize external contacts from a Microsoft Active Directory or LDAP server. Sync your shared contacts.
+
+*(excerpt from [Google - Add shared external contacts to the Directory](https://support.google.com/a/answer/9281635?fl=1&sjid=12378158771792397271-NC))*
+
+### A solution
+For many organizations, a cost-based option isn't attractive, and Google Cloud Directory Sync does not match their implementation. What they *really* need is a free, easy shared external contact management tool.
+
 ## Features
 - Familiar spreadsheet interface with a simple contacts table
-- Contact data can be imported via Google Sheet's existing UI
+- Contact data can be imported in bulk via Google Sheet's existing UI
 - Easy shared external contact management via `action` column and drop-down menu
 
 ## How to Use
