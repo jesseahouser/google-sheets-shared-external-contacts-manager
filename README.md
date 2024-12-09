@@ -49,10 +49,12 @@ For many organizations, a cost-based app option isn't attractive, and Google Clo
 ## How to Use
 Once installed, use the `Shared External Contacts` drop-down menu to get and sync contacts.
 
+🚨 **Warning**: This is intended only for external contacts. Using this to create contact information for domain (internal) users or groups can result in duplicate contact information for those users and groups, which might lead to unexpected behavior.
+
 ### Get contacts
 `Shared External Contacts` > `Get contacts` retrieves your organization's existing shared external contacts (if any) from the directory and populates the contacts table.
 
-⚠️ Make sure you don't have any unsynced changes - this will clear the contacts table before bringing in all of the shared external contacts from the directory. 📇
+⚠️ **Caution**: Make sure you don't have any unsynced changes - this will clear the contacts table before bringing in all of the shared external contacts from the directory. 📇
 
 ### Sync contacts
 `Shared External Contacts` > `Sync contacts` applies the user-specified actions (`ADD` / `UPDATE` / `DELETE` in the `Action` column) and syncs the external contacts in the spreadsheet table to your organization's shared [Contacts Directory](https://contacts.google.com/directory).
@@ -60,7 +62,13 @@ Once installed, use the `Shared External Contacts` drop-down menu to get and syn
 - 🆕 **Add a contact**: fill out the contact info on the next blank row in the table, then select `ADD` in the `Action` column.
 - ✏️ **Edit a contact**: ensure that it has an ID, make the desired changes, then select `UPDATE` in the `Action` column.
 - 🗑️ **Delete a contact**: ensure that it has an ID, then selelect `DELETE` in the `Action` column.
-- 🔄 Then, when you are finished and ready to sync your changes, select `Sync contacts` from the dropdown menu.
+- 🔄 **Sync changes**: when you are finished and ready to sync all of your changes, select `Sync contacts` from the dropdown menu.
+
+ℹ️ **Note**: Although changes to the contacts are stored immediately, they can take up to 24 hours to be reflected in the email address autocomplete and the Contacts Directory.
+
+## Relevant API documentation
+- [Google Workspace - Admin console - Guides - Domain Shared Contacts API](https://developers.google.com/admin-sdk/domain-shared-contacts/overview)
+- [Google Workspace - Admin Console - Reference - Domain Shared Contacts API](https://developers.google.com/admin-sdk/domain-shared-contacts/contacts-feed)
 
 ## Contribution
 Feel free to fork the repository, submit issues, or create pull requests. Contributions are always welcome! 🤝
