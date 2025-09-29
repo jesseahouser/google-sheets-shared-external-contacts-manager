@@ -7,7 +7,7 @@
  */
 function fetchContacts(startIndex = 1) {
   console.log(`Fetching shared external contacts, startIndex: ${startIndex}`)
-  if (startIndex = 1)
+  if (startIndex === 1)
     maybeClearTableData()
 
   const request = formRequest('get', null, startIndex)
@@ -46,33 +46,44 @@ function syncContacts() {
       .getValues()
   const contactTableMapping = createContactTableMapping()
   const contacts = buildContactsFromTableData(tableData, contactTableMapping)
-  var errorCount=''
+  let errorRows = []
 
   if (contacts) {
-    for (i in contacts) {
-      var rowNum = FIRST_DATA_ROW_NUMBER + parseInt(i)
-      
+    for (let i in contacts) {
+      const rowNum = FIRST_DATA_ROW_NUMBER + parseInt(i)
+
       switch (contacts[i].action) {
         case 'ADD':
-          addContact(contacts[i], rowNum)
+          const addResult = addContact(contacts[i], rowNum)
+          if (!addResult.success) {
+            errorRows.push(rowNum)
+          }
           break
         case 'UPDATE' :
-          updateContact(contacts[i], rowNum)
+          const updateResult = updateContact(contacts[i], rowNum)
+          if (!updateResult.success) {
+            errorRows.push(rowNum)
+          }
           break
         case 'DELETE' :
-          deleteContact(contacts[i], rowNum)
+          const deleteResult = deleteContact(contacts[i], rowNum)
+          if (!deleteResult.success) {
+            errorRows.push(rowNum)
+          }
           break
       }
     }
 
-    if (errorCount=='') {
+    if (errorRows.length === 0) {
       console.log(`Waiting ${WAIT_TIMER_MILLISECONDS / 1000} seconds...`)
       Utilities.sleep(WAIT_TIMER_MILLISECONDS)
       console.log('Resuming')
       fetchContacts()
       SS.toast('All operations have been successful.')
     } else {
-      SS.toast('There were some errors while processing the request.')
+      const errorMessage = `There were ${errorRows.length} error(s) while processing the request. Failed rows: ${errorRows.join(', ')}`
+      console.log(errorMessage)
+      SS.toast(errorMessage)
     }
   } else {
     SS.toast('No data to process.')
@@ -81,16 +92,17 @@ function syncContacts() {
 
 /**
  * Sends a request to add a new contact if it does not already have an ID.
- * 
+ *
  * @param {Object} contact - The contact object to be added.
  * @param {number} rowNum - The row number in the spreadsheet for this contact.
- * @return {void}
+ * @return {Object} Object with success boolean and optional error message.
  */
 function addContact(contact,rowNum) {
   if (contact.id) {
     console.log(
       `Skipping request to add contact because id already present:
       {givenName: ${contact.givenName}, familyName: ${contact.familyName}, id: ${contact.id}}`)
+    return { success: true }
   }
   else {
     console.log(
@@ -98,16 +110,16 @@ function addContact(contact,rowNum) {
       {givenName: ${contact.givenName}, familyName: ${contact.familyName}}`)
     const request = formRequest('post', contact, rowNum)
     const response = UrlFetchApp.fetch(request.url, request.options)
-    handleResponse('post', response, rowNum)
+    return handleResponse('post', response, rowNum)
   }
 }
 
 /**
  * Sends a request to update an existing contact if it has an ID.
- * 
+ *
  * @param {Object} contact - The contact object with updated data.
  * @param {number} rowNum - The row number in the spreadsheet for this contact.
- * @return {void}
+ * @return {Object} Object with success boolean and optional error message.
  */
 function updateContact(contact, rowNum) {
   if (contact.id) {
@@ -116,20 +128,21 @@ function updateContact(contact, rowNum) {
       {givenName: ${contact.givenName}, familyName: ${contact.familyName}, id: ${contact.id}}`)
     const request = formRequest('put', contact)
     const response = UrlFetchApp.fetch(request.url, request.options)
-    handleResponse('put', response, rowNum) 
+    return handleResponse('put', response, rowNum)
   } else {
     console.log(
       `Skipping request to update contact because no id:
       {givenName: ${contact.givenName}, familyName: ${contact.familyName}, id: ${contact.id}}`)
+    return { success: false, error: 'No ID provided for update operation' }
   }
 }
 
 /**
  * Sends a request to delete a contact if it has an ID.
- * 
+ *
  * @param {Object} contact - The contact object to be deleted.
  * @param {number} rowNum - The row number in the spreadsheet for this contact.
- * @return {void}
+ * @return {Object} Object with success boolean and optional error message.
  */
 function deleteContact(contact,rowNum) {
   if (contact.id) {
@@ -138,11 +151,12 @@ function deleteContact(contact,rowNum) {
       {givenName: ${contact.givenName}, familyName: ${contact.familyName}, id: ${contact.id}}`)
     const request = formRequest('delete', contact)
     const response = UrlFetchApp.fetch(request.url, request.options);
-    handleResponse('delete', response, rowNum)
+    return handleResponse('delete', response, rowNum)
   } else {
     console.log(
       `Skipping request to delete contact because no id:
       {givenName: ${contact.givenName}, familyName: ${contact.familyName}, id: ${contact.id}}`)
+    return { success: false, error: 'No ID provided for delete operation' }
   }
 }
 
@@ -225,14 +239,14 @@ function formRequest(method, contact, startIndex = null) {
 
 /**
  * Handles API responses based on the HTTP method and updates the spreadsheet accordingly.
- * 
+ *
  * @param {string} method - The HTTP method ('get', 'post', 'put', 'delete').
  * @param {Object} response - The response object from the API.
  * @param {number} [rowNum=null] - The row number in the spreadsheet for post/put/delete operations.
- * @return {void}
+ * @return {Object} Object with success boolean and optional error message for post/put/delete operations.
  */
 function handleResponse(method, response, rowNum = null) {
-  const responseCode=response.getResponseCode()
+  const responseCode = response.getResponseCode()
   console.log(
     `method: ${method.toString().toUpperCase()}
 response code: ${responseCode}
@@ -261,7 +275,7 @@ response: ${response}`)
         var sortedTableContacts = sortTableContactsAlphabetically(tableContacts)
         addTableContactsToDataTable(sortedTableContacts)
       }
-      break
+      return { success: true }
 
     case 'post':
     case 'put':
@@ -269,20 +283,25 @@ response: ${response}`)
         SHEET.getRange(rowNum, 2, 1, 1).setValue('OK')
         SHEET.getRange(rowNum, 1, 1, 1).clear()
         SpreadsheetApp.flush()
+        return { success: true }
       } else {
         SHEET.getRange(rowNum, 2, 1, 1).setValue('ERROR')
-        errorCount = errorCount.toString()+rowNum
+        SpreadsheetApp.flush()
+        return { success: false, error: `HTTP ${responseCode}: ${response.getContentText()}` }
       }
-      break
 
     case 'delete':
       if (responseCode >= 200 && responseCode < 300) {
         SHEET.deleteRow(rowNum)
         SpreadsheetApp.flush()
+        return { success: true }
       } else {
         SHEET.getRange(rowNum, 2, 1, 1).setValue('ERROR')
-        errorCount = errorCount.toString()+rowNum
+        SpreadsheetApp.flush()
+        return { success: false, error: `HTTP ${responseCode}: ${response.getContentText()}` }
       }
-      break
+
+    default:
+      return { success: false, error: `Unknown method: ${method}` }
   }
 }
